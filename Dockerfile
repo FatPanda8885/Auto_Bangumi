@@ -20,7 +20,8 @@ RUN apk add --no-cache \
     su-exec \
     shadow \
     tini \
-    tzdata
+    tzdata \
+    ffmpeg
 
 ENV LANG="C.UTF-8" \
     TZ=Asia/Shanghai \
