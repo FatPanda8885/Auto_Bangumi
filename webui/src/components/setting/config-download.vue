@@ -93,8 +93,7 @@ const items: SettingItem<Downloader>[] = [
   border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
   color: var(--color-text-secondary);
   font-size: 12px;
-  transition:
-    background-color var(--transition-normal),
+  transition: background-color var(--transition-normal),
     border-color var(--transition-normal);
 }
 </style>

@@ -63,7 +63,9 @@ export const useEventStream = createSharedComposable(() => {
     }
     teardown();
 
-    const es = new EventSource('api/v1/events/stream', { withCredentials: true });
+    const es = new EventSource('api/v1/events/stream', {
+      withCredentials: true,
+    });
     source = es;
 
     es.onopen = () => {

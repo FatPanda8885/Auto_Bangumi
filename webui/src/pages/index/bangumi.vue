@@ -463,7 +463,8 @@ function groupNeedsReview(group: BangumiGroup): boolean {
   justify-content: center;
   background: var(--color-surface-hover);
   border: 2px dashed var(--color-border);
-  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+  transition: box-shadow var(--transition-fast),
+    transform var(--transition-fast);
 
   .others-card:hover &,
   .others-card:focus-visible & {

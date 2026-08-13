@@ -43,7 +43,11 @@ const binding = ref(false);
 const sourceItems = computed(() => sources.value.map((s) => s.name));
 const channelItems = computed(() => channels.value.map((c) => c.name));
 const bangumiItems = computed(() =>
-  activeBangumi.map((b) => ({ id: b.id, value: String(b.id), label: b.official_title }))
+  activeBangumi.map((b) => ({
+    id: b.id,
+    value: String(b.id),
+    label: b.official_title,
+  }))
 );
 const weekdayItems = computed(() => [
   { id: 0, value: '', label: t('online_source.everyday') },
@@ -60,7 +64,8 @@ const currentChannel = computed<OnlineChannel | null>(() => {
   if (!channels.value.length) return null;
   if (selectedChannel.value) {
     return (
-      channels.value.find((c) => c.name === selectedChannel.value) || channels.value[0]
+      channels.value.find((c) => c.name === selectedChannel.value) ||
+      channels.value[0]
     );
   }
   return channels.value.find((c) => c.episodes.length) || channels.value[0];
@@ -108,7 +113,8 @@ async function handleDownload() {
       episode: episode.value,
       media_type: 'episode',
     });
-    if (res.status === 'added') message.success(t('online_source.download_success'));
+    if (res.status === 'added')
+      message.success(t('online_source.download_success'));
     else if (res.status === 'duplicate')
       message.info(t('online_source.download_duplicate'));
     else message.error(t('online_source.download_failed'));
@@ -162,7 +168,12 @@ function handleClose() {
     </transition>
 
     <transition name="modal">
-      <div v-if="showModal" class="modal-container" role="dialog" aria-modal="true">
+      <div
+        v-if="showModal"
+        class="modal-container"
+        role="dialog"
+        aria-modal="true"
+      >
         <div class="modal-content">
           <!-- Header -->
           <header class="modal-header">
@@ -197,7 +208,9 @@ function handleClose() {
 
             <!-- Subject results -->
             <template v-else-if="!selectedSubject">
-              <p v-if="searchFailed" class="hint">{{ t('online_source.failed') }}</p>
+              <p v-if="searchFailed" class="hint">
+                {{ t('online_source.failed') }}
+              </p>
               <p
                 v-else-if="!loading && subjects.length === 0 && keyword"
                 class="hint"
@@ -250,7 +263,9 @@ function handleClose() {
           <!-- Download panel -->
           <footer v-if="selectedEpisode" class="download-panel">
             <div class="download-row">
-              <span class="dl-label">{{ t('online_source.target_bangumi') }}</span>
+              <span class="dl-label">{{
+                t('online_source.target_bangumi')
+              }}</span>
               <ab-select
                 v-model="targetBangumiId"
                 :items="bangumiItems"
@@ -280,9 +295,17 @@ function handleClose() {
             </div>
             <template v-if="bindEnabled">
               <div class="download-row">
-                <span class="dl-label">{{ t('online_source.update_time') }}</span>
-                <ab-input v-model="updateTime" placeholder="22:00" class="num-input" />
-                <span class="dl-label">{{ t('online_source.update_weekday') }}</span>
+                <span class="dl-label">{{
+                  t('online_source.update_time')
+                }}</span>
+                <ab-input
+                  v-model="updateTime"
+                  placeholder="22:00"
+                  class="num-input"
+                />
+                <span class="dl-label">{{
+                  t('online_source.update_weekday')
+                }}</span>
                 <ab-select
                   v-model="updateWeekday"
                   :items="weekdayItems"
@@ -516,7 +539,8 @@ function handleClose() {
 // transition
 .modal-enter-active,
 .modal-leave-active {
-  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  transition: opacity var(--transition-normal),
+    transform var(--transition-normal);
 }
 
 .modal-enter-from,

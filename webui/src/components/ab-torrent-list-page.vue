@@ -77,7 +77,9 @@ onActivated(load);
           <template #icon>
             <Delete :size="14" />
           </template>
-          {{ $t('homepage.torrents.delete_selected', { count: selectedIds.size }) }}
+          {{
+            $t('homepage.torrents.delete_selected', { count: selectedIds.size })
+          }}
         </ab-button>
         <ab-button
           v-if="torrents.length > 0"
@@ -203,7 +205,11 @@ onActivated(load);
   transition: background-color var(--transition-fast);
 
   &:hover {
-    background: color-mix(in srgb, var(--color-surface-hover) 80%, var(--color-primary));
+    background: color-mix(
+      in srgb,
+      var(--color-surface-hover) 80%,
+      var(--color-primary)
+    );
   }
 
   &--selected {

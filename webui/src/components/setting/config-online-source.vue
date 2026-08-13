@@ -55,7 +55,9 @@ async function handleImport() {
   importing.value = true;
   try {
     const res = await apiOnlineSource.importSources(importUrl.value.trim());
-    message.success(t('config.online_source_set.import_success', { count: res.imported }));
+    message.success(
+      t('config.online_source_set.import_success', { count: res.imported })
+    );
   } catch {
     message.error(t('config.online_source_set.import_failed'));
   } finally {
