@@ -10,6 +10,7 @@ import ConfigNotification from '@/components/setting/config-notification.vue';
 import ConfigProxy from '@/components/setting/config-proxy.vue';
 import ConfigNetwork from '@/components/setting/config-network.vue';
 import ConfigSearchProvider from '@/components/setting/config-search-provider.vue';
+import ConfigOnlineSource from '@/components/setting/config-online-source.vue';
 import ConfigPlayer from '@/components/setting/config-player.vue';
 import ConfigLlm from '@/components/setting/config-llm.vue';
 import ConfigPasskey from '@/components/setting/config-passkey.vue';
@@ -155,6 +156,13 @@ const sections: ConfigSection[] = [
     component: ConfigSearchProvider,
     groups: [],
     keywords: ['search', 'provider', 'mikan', 'url'],
+  },
+  {
+    id: 'online-source',
+    titleKey: 'config.online_source_set.title',
+    component: ConfigOnlineSource,
+    groups: ['online_source'],
+    keywords: ['online', 'source', 'aria2', 'ffmpeg', 'm3u8', '在线源'],
   },
   {
     id: 'player',

@@ -55,6 +55,21 @@ def column_exists(table: str, column: str) -> AppliedCheck:
     return check
 
 
+def column_exists_or_missing_table(table: str, column: str) -> AppliedCheck:
+    """column_exists 变体：目标表本身不存在时也视为「已应用」。
+
+    用于 ALTER 既有表的迁移（如给 bangumi 加列）——在只含认证表的最小
+    fixture（见 test_upgrades_auth_beta_v20_without_losing_tokens）里，
+    bangumi 表可能不存在，此时应跳过而非对不存在的表执行 ALTER。
+    """
+    def check(inspector) -> bool:
+        if table not in inspector.get_table_names():
+            return True
+        return column in {col["name"] for col in inspector.get_columns(table)}
+
+    return check
+
+
 def table_exists(table: str) -> AppliedCheck:
     def check(inspector) -> bool:
         return table in inspector.get_table_names()
@@ -778,6 +793,46 @@ MIGRATIONS: tuple[Migration, ...] = (
             (
                 "ALTER TABLE aria2_gid ADD COLUMN rename_intent TEXT DEFAULT NULL",
                 column_exists("aria2_gid", "rename_intent"),
+            ),
+        ),
+    ),
+    Migration(
+        25,
+        "add online-source chase binding columns to bangumi",
+        (
+            "ALTER TABLE bangumi ADD COLUMN online_source TEXT DEFAULT NULL",
+            "ALTER TABLE bangumi ADD COLUMN online_subject_id TEXT DEFAULT NULL",
+            "ALTER TABLE bangumi ADD COLUMN online_channel TEXT DEFAULT NULL",
+            "ALTER TABLE bangumi ADD COLUMN online_update_time TEXT DEFAULT NULL",
+            "ALTER TABLE bangumi ADD COLUMN online_update_weekday INTEGER DEFAULT NULL",
+        ),
+        all_checks(
+            column_exists_or_missing_table("bangumi", "online_source"),
+            column_exists_or_missing_table("bangumi", "online_subject_id"),
+            column_exists_or_missing_table("bangumi", "online_channel"),
+            column_exists_or_missing_table("bangumi", "online_update_time"),
+            column_exists_or_missing_table("bangumi", "online_update_weekday"),
+        ),
+        (
+            (
+                "ALTER TABLE bangumi ADD COLUMN online_source TEXT DEFAULT NULL",
+                column_exists_or_missing_table("bangumi", "online_source"),
+            ),
+            (
+                "ALTER TABLE bangumi ADD COLUMN online_subject_id TEXT DEFAULT NULL",
+                column_exists_or_missing_table("bangumi", "online_subject_id"),
+            ),
+            (
+                "ALTER TABLE bangumi ADD COLUMN online_channel TEXT DEFAULT NULL",
+                column_exists_or_missing_table("bangumi", "online_channel"),
+            ),
+            (
+                "ALTER TABLE bangumi ADD COLUMN online_update_time TEXT DEFAULT NULL",
+                column_exists_or_missing_table("bangumi", "online_update_time"),
+            ),
+            (
+                "ALTER TABLE bangumi ADD COLUMN online_update_weekday INTEGER DEFAULT NULL",
+                column_exists_or_missing_table("bangumi", "online_update_weekday"),
             ),
         ),
     ),

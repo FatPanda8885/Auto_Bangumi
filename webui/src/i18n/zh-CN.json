@@ -169,6 +169,20 @@
       "category_id_placeholder": "例如：402",
       "nexusphp_hint": "根据 Passkey 生成 torrentrss.php 搜索模板。注意：原生 NexusPHP 已停用 search 参数、对任何搜索词都返回最新种子，请先在站点上确认 RSS 搜索确实按词过滤。",
       "category_id_invalid": "分类 ID 必须是数字（多个用逗号分隔）"
+    },
+    "online_source_set": {
+      "title": "在线源",
+      "enable": "启用在线源下载",
+      "aria2_rpc_url": "aria2 RPC 地址",
+      "aria2_secret": "aria2 RPC 密钥",
+      "save_path": "保存目录",
+      "ffmpeg_path": "ffmpeg 路径",
+      "request_delay": "同源请求间隔（秒）",
+      "import_url": "订阅列表 URL（css1.json）",
+      "import_btn": "导入",
+      "import_success": "已导入 {count} 个在线源",
+      "import_failed": "导入失败",
+      "search_open": "搜索在线源"
     }
   },
   "downloader": {
@@ -671,7 +685,8 @@
       "click_to_search": "点击搜索"
     },
     "shutdown": "关闭",
-    "start": "启动"
+    "start": "启动",
+    "online_source": "在线源搜索"
   },
   "notifications": {
     "title": "通知",
@@ -733,5 +748,37 @@
         "body": "{torrent_name} → {target_path}：{reason}"
       }
     }
+  },
+  "online_source": {
+    "title": "在线源搜索",
+    "source": "源",
+    "search": "搜索",
+    "search_placeholder": "搜索番剧...",
+    "no_sources": "尚未导入在线源，请先在设置页导入 css1.json 订阅列表",
+    "no_results": "无结果",
+    "failed": "搜索失败",
+    "start_typing": "输入关键词开始搜索",
+    "channel": "路线",
+    "target_bangumi": "下载到番剧",
+    "season": "季",
+    "episode": "集",
+    "download": "下载",
+    "download_success": "已开始下载",
+    "download_duplicate": "该集已下载过",
+    "download_failed": "下载失败",
+    "bind": "绑定并设置更新时间",
+    "bind_confirm": "绑定",
+    "bind_success": "绑定成功",
+    "bind_failed": "绑定失败",
+    "update_time": "更新时间",
+    "update_weekday": "星期",
+    "everyday": "每天",
+    "monday": "周一",
+    "tuesday": "周二",
+    "wednesday": "周三",
+    "thursday": "周四",
+    "friday": "周五",
+    "saturday": "周六",
+    "sunday": "周日"
   }
 }

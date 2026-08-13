@@ -342,6 +342,13 @@ class Aria2Downloader:
             logger.error("addUri connection error for %s: %s", url, e)
             return AddResult.FAILED, None
 
+    async def add_uri(self, url: str, options: dict) -> tuple[AddResult, str | None]:
+        """直链（HTTP）下载的公开入口，供在线源下载器复用。
+
+        等价于 ``addUri`` RPC + 重复检测，返回 ``(AddResult, gid)``。
+        """
+        return await self._add_uri(url, options)
+
     async def _add_torrent_file(
         self, data: bytes, options: dict
     ) -> tuple[AddResult, str | None]:

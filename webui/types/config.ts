@@ -163,6 +163,16 @@ export interface Update {
   auto_check: boolean;
 }
 
+/** 在线源（在线播放站）下载配置：独立的 aria2 + ffmpeg */
+export interface OnlineSource {
+  enable: boolean;
+  aria2_rpc_url: string;
+  aria2_secret: string;
+  save_path: string;
+  ffmpeg_path: string;
+  request_delay: number;
+}
+
 export interface Config {
   program: Program;
   downloader: Downloader;
@@ -177,6 +187,7 @@ export interface Config {
   experimental_openai: ExperimentalOpenAI;
   security: Security;
   update: Update;
+  online_source: OnlineSource;
 }
 
 export const initConfig: Config = {
@@ -263,5 +274,13 @@ export const initConfig: Config = {
   update: {
     channel: 'stable',
     auto_check: true,
+  },
+  online_source: {
+    enable: false,
+    aria2_rpc_url: 'http://172.17.0.1:6800',
+    aria2_secret: '',
+    save_path: '/downloads/Bangumi',
+    ffmpeg_path: 'ffmpeg',
+    request_delay: 2.0,
   },
 };

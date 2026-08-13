@@ -169,6 +169,20 @@
       "category_id_placeholder": "e.g., 402",
       "nexusphp_hint": "Builds a torrentrss.php search template from your passkey. Note: stock NexusPHP ignores the search parameter and always returns the latest torrents — verify on your site that RSS search actually filters results.",
       "category_id_invalid": "Category IDs must be numeric (comma-separated for multiple)"
+    },
+    "online_source_set": {
+      "title": "Online Source",
+      "enable": "Enable online source download",
+      "aria2_rpc_url": "aria2 RPC URL",
+      "aria2_secret": "aria2 RPC secret",
+      "save_path": "Save path",
+      "ffmpeg_path": "ffmpeg path",
+      "request_delay": "Per-host request delay (s)",
+      "import_url": "Subscription list URL (css1.json)",
+      "import_btn": "Import",
+      "import_success": "Imported {count} sources",
+      "import_failed": "Import failed",
+      "search_open": "Search online source"
     }
   },
   "downloader": {
@@ -671,7 +685,8 @@
       "click_to_search": "Click to search"
     },
     "shutdown": "Shutdown",
-    "start": "Start"
+    "start": "Start",
+    "online_source": "Online source search"
   },
   "notifications": {
     "title": "Notifications",
@@ -733,5 +748,37 @@
         "body": "{torrent_name} → {target_path}: {reason}"
       }
     }
+  },
+  "online_source": {
+    "title": "Online Source Search",
+    "source": "Source",
+    "search": "Search",
+    "search_placeholder": "Search anime...",
+    "no_sources": "No sources imported yet. Import a css1.json subscription list in the settings.",
+    "no_results": "No results",
+    "failed": "Search failed",
+    "start_typing": "Type a keyword to search",
+    "channel": "Channel",
+    "target_bangumi": "Download to",
+    "season": "Season",
+    "episode": "Episode",
+    "download": "Download",
+    "download_success": "Download started",
+    "download_duplicate": "Episode already downloaded",
+    "download_failed": "Download failed",
+    "bind": "Bind & set update time",
+    "bind_confirm": "Bind",
+    "bind_success": "Bound successfully",
+    "bind_failed": "Bind failed",
+    "update_time": "Update time",
+    "update_weekday": "Weekday",
+    "everyday": "Every day",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
   }
 }

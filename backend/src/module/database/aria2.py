@@ -9,7 +9,7 @@ import logging
 from dataclasses import asdict, dataclass
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import select
+from sqlmodel import and_, select
 
 from module.models.aria2 import Aria2Gid
 
@@ -104,6 +104,30 @@ class Aria2GidDatabase:
             select(Aria2Gid.gid).where(Aria2Gid.dedup_key == dedup_key)  # type: ignore[arg-type]
         )
         return result.scalars().first()
+
+    async def list_online_episodes(self, bangumi_id: int) -> set[tuple[int, float]]:
+        """返回该番剧已通过在线源下载的 (season, episode) 集合。
+
+        在线源的去重键形如 ``online:<bangumi_id>:<season>:<episode>``，据此
+        反解出已下载的季度/集数，供半自动追番循环跳过已抓取的集。
+        """
+        result = await self.session.execute(
+            select(Aria2Gid.dedup_key).where(
+                and_(
+                    Aria2Gid.bangumi_id == bangumi_id,
+                    Aria2Gid.dedup_key.like("online:%"),  # type: ignore[attr-defined]
+                )
+            )
+        )
+        episodes: set[tuple[int, float]] = set()
+        for key in result.scalars().all():
+            parts = (key or "").split(":")
+            if len(parts) == 4 and parts[0] == "online":
+                try:
+                    episodes.add((int(parts[2]), float(parts[3])))
+                except ValueError:
+                    continue
+        return episodes
 
     async def set_category(self, gid: str, category: str) -> None:
         await self.upsert(gid, category=category)

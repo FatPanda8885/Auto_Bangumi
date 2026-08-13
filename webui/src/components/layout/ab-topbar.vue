@@ -67,6 +67,14 @@ const items = [
       showAccount.value = true;
     },
   },
+  {
+    id: 8,
+    label: () => t('topbar.online_source'),
+    icon: Search,
+    handle: () => {
+      useOnlineSourceStore().openModal();
+    },
+  },
 ];
 
 const { isDark } = useDarkMode();

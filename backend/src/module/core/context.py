@@ -35,6 +35,7 @@ from module.update import (
 from .loops import (
     calendar_tick,
     offset_scan_tick,
+    online_source_tick,
     rename_tick,
     rss_tick,
     update_check_tick,
@@ -50,9 +51,11 @@ DOWNLOADER_STATUS_TTL = 60
 OFFSET_SCAN_INTERVAL = 6 * 60 * 60
 CALENDAR_REFRESH_INTERVAL = 24 * 60 * 60
 UPDATE_CHECK_INTERVAL = 24 * 60 * 60
+ONLINE_SOURCE_CHECK_INTERVAL = 15 * 60
 OFFSET_SCAN_INITIAL_DELAY = 60
 CALENDAR_INITIAL_DELAY = 120
 UPDATE_CHECK_INITIAL_DELAY = 300
+ONLINE_SOURCE_INITIAL_DELAY = 120
 
 # Downloader wait-retry loop on startup.
 _DOWNLOADER_MAX_RETRIES = 10
@@ -143,6 +146,13 @@ class AppContext:
                     interval=lambda: UPDATE_CHECK_INTERVAL,
                     initial_delay=UPDATE_CHECK_INITIAL_DELAY,
                     enabled=lambda: settings_obj.update.auto_check,
+                ),
+                PeriodicTask(
+                    name="online_source",
+                    run=lambda: online_source_tick(notifier),
+                    interval=lambda: ONLINE_SOURCE_CHECK_INTERVAL,
+                    initial_delay=ONLINE_SOURCE_INITIAL_DELAY,
+                    enabled=lambda: settings_obj.online_source.enable,
                 ),
             ]
         )

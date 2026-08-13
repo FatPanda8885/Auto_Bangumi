@@ -61,6 +61,23 @@ class Bangumi(SQLModel, table=True):
     episode_type: str = Field(
         default="episode", alias="episode_type", title="剧集类型"
     )  # "episode" | "movie" | "special"
+    # 在线源追番绑定：用户手动把番剧绑定到某在线源 + 指定更新时间，
+    # 系统到点自动检查该源是否有新集并下载（半自动追番）。
+    online_source: Optional[str] = Field(
+        default=None, alias="online_source", title="在线源名"
+    )
+    online_subject_id: Optional[str] = Field(
+        default=None, alias="online_subject_id", title="在线源番剧标识"
+    )
+    online_channel: Optional[str] = Field(
+        default=None, alias="online_channel", title="在线源播放路线"
+    )
+    online_update_time: Optional[str] = Field(
+        default=None, alias="online_update_time", title="在线源更新时间"
+    )  # "HH:MM"（空 = 不自动检查）
+    online_update_weekday: Optional[int] = Field(
+        default=None, alias="online_update_weekday", title="在线源更新星期"
+    )  # 0-6，可选
 
 
 class BangumiUpdate(SQLModel):
@@ -108,6 +125,21 @@ class BangumiUpdate(SQLModel):
     episode_type: str = Field(
         default="episode", alias="episode_type", title="剧集类型"
     )  # "episode" | "movie" | "special"
+    online_source: Optional[str] = Field(
+        default=None, alias="online_source", title="在线源名"
+    )
+    online_subject_id: Optional[str] = Field(
+        default=None, alias="online_subject_id", title="在线源番剧标识"
+    )
+    online_channel: Optional[str] = Field(
+        default=None, alias="online_channel", title="在线源播放路线"
+    )
+    online_update_time: Optional[str] = Field(
+        default=None, alias="online_update_time", title="在线源更新时间"
+    )
+    online_update_weekday: Optional[int] = Field(
+        default=None, alias="online_update_weekday", title="在线源更新星期"
+    )
 
 
 class Notification(BaseModel):

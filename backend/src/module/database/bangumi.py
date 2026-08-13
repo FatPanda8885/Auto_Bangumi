@@ -791,6 +791,19 @@ class BangumiDatabase:
         result = await self.session.execute(statement)
         return list(result.scalars().all())
 
+    async def get_online_bound(self) -> list[Bangumi]:
+        """获取绑定了在线源、设置了更新时间且未删除的番剧（半自动追番）。"""
+        statement = select(Bangumi).where(
+            and_(
+                Bangumi.deleted == false(),
+                Bangumi.online_source.is_not(None),  # type: ignore[attr-defined]
+                Bangumi.online_subject_id.is_not(None),  # type: ignore[attr-defined]
+                Bangumi.online_update_time.is_not(None),  # type: ignore[attr-defined]
+            )
+        )
+        result = await self.session.execute(statement)
+        return list(result.scalars().all())
+
     async def set_needs_review(
         self,
         _id: int,

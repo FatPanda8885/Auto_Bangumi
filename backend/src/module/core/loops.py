@@ -6,18 +6,30 @@
 
 import asyncio
 import logging
+from datetime import datetime
 
 from module.conf import settings
 from module.database import Database
-from module.downloader import DownloadClient
+from module.downloader import AddResult, DownloadClient
 from module.manager import Renamer, TorrentManager, eps_complete
-from module.notification import NotificationManager, UpdateAvailableEvent
+from module.models import Bangumi
+from module.notification import (
+    NotificationManager,
+    OnlineSourceResolveFailedEvent,
+    UpdateAvailableEvent,
+)
+from module.online_source import OnlineSourceEngine
+from module.online_source.downloader import OnlineSourceDownloader
 from module.rss import RSSAnalyser, RSSEngine
 from module.update import updater
 
 from .offset_scanner import OffsetScanner
 
 logger = logging.getLogger(__name__)
+
+# 半自动追番：每个 (bangumi_id, 日期) 每日只检查一次（进程内记忆，重启后
+# 当天会多查一次，代价可忽略）。
+_online_checked: set[tuple[int, str]] = set()
 
 
 async def rss_tick(analyser: RSSAnalyser, notifier: NotificationManager) -> None:
@@ -113,3 +125,110 @@ async def calendar_tick() -> None:
         # 成功已由 TorrentManager.refresh_calendar 记录（含更新数量）
         if not resp.status:
             logger.warning("Calendar refresh failed: %s", resp.msg_en)
+
+
+def _parse_hhmm(value: str | None) -> tuple[int, int] | None:
+    """解析 ``"HH:MM"``，非法/越界返回 None。"""
+    if not value:
+        return None
+    parts = value.strip().split(":")
+    if len(parts) != 2:
+        return None
+    try:
+        hour, minute = int(parts[0]), int(parts[1])
+    except ValueError:
+        return None
+    if 0 <= hour <= 23 and 0 <= minute <= 59:
+        return hour, minute
+    return None
+
+
+def _is_due(bangumi: Bangumi, now: datetime) -> bool:
+    """判断该番剧是否到点需要检查（每日一次，可按星期限定）。"""
+    scheduled = _parse_hhmm(bangumi.online_update_time)
+    if scheduled is None:
+        return False
+    if (
+        bangumi.online_update_weekday is not None
+        and now.weekday() != bangumi.online_update_weekday
+    ):
+        return False
+    hour, minute = scheduled
+    if (now.hour, now.minute) < (hour, minute):
+        return False
+    key = (bangumi.id, now.strftime("%Y-%m-%d"))
+    if key in _online_checked:
+        return False
+    _online_checked.add(key)
+    return True
+
+
+def _pick_channel(channels, preferred: str | None):
+    if not channels:
+        return None
+    if preferred:
+        for ch in channels:
+            if preferred in ch.name or ch.name in preferred:
+                return ch
+    for ch in channels:
+        if ch.episodes:
+            return ch
+    return channels[0]
+
+
+async def _check_online_bangumi(engine, downloader, bangumi, notifier) -> None:
+    channels = await engine.get_channels(bangumi.online_source, bangumi.online_subject_id)
+    channel = _pick_channel(channels, bangumi.online_channel)
+    if channel is None:
+        return
+    async with Database() as db:
+        downloaded = await db.aria2.list_online_episodes(bangumi.id)
+    for ep in channel.episodes:
+        if ep.sort is None or ep.sort <= 0:
+            continue
+        if (bangumi.season, ep.sort) in downloaded:
+            continue
+        video = await engine.resolve(bangumi.online_source, ep.url)
+        if video is None:
+            await notifier.send_event(
+                OnlineSourceResolveFailedEvent(
+                    official_title=bangumi.official_title,
+                    source=bangumi.online_source or "",
+                    error=ep.name,
+                )
+            )
+            continue
+        result = await downloader.download(
+            video, bangumi, bangumi.season, ep.sort, bangumi.episode_type
+        )
+        if result is AddResult.ADDED:
+            logger.info(
+                "Online source downloaded %s S%02dE%s",
+                bangumi.official_title,
+                bangumi.season,
+                ep.sort,
+            )
+
+
+async def online_source_tick(notifier: NotificationManager) -> None:
+    """半自动追番：到点检查绑定了在线源的番剧是否有新集并下载。"""
+    if not settings.online_source.enable:
+        return
+    async with Database() as db:
+        bangumi_list = await db.bangumi.get_online_bound()
+    if not bangumi_list:
+        return
+    engine = OnlineSourceEngine()
+    downloader = OnlineSourceDownloader()
+    now = datetime.now()
+    for bangumi in bangumi_list:
+        if not _is_due(bangumi, now):
+            continue
+        try:
+            await _check_online_bangumi(engine, downloader, bangumi, notifier)
+        except Exception:
+            logger.warning(
+                "Online-source check failed for %s",
+                bangumi.official_title,
+                exc_info=True,
+            )

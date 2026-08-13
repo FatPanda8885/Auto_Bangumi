@@ -83,6 +83,14 @@ DEFAULT_SETTINGS: dict[str, dict[str, Any]] = {
         "channel": "stable",
         "auto_check": True,
     },
+    "online_source": {
+        "enable": False,
+        "aria2_rpc_url": "http://172.17.0.1:6800",
+        "aria2_secret": "",
+        "save_path": "/downloads/Bangumi",
+        "ffmpeg_path": "ffmpeg",
+        "request_delay": 2.0,
+    },
 }
 
 
@@ -136,6 +144,16 @@ ENV_TO_ATTR: dict[str, dict[str, Any]] = {
             ("username", lambda e: e.split(",")[2]),
             ("password", lambda e: e.split(",")[3]),
         ],
+    },
+    "online_source": {
+        "AB_ONLINE_SOURCE_ENABLE": (
+            "enable",
+            lambda e: e.lower() in ("true", "1", "t"),
+        ),
+        "AB_ONLINE_SOURCE_ARIA2_RPC": "aria2_rpc_url",
+        "AB_ONLINE_SOURCE_ARIA2_SECRET": "aria2_secret",
+        "AB_ONLINE_SOURCE_SAVE_PATH": "save_path",
+        "AB_ONLINE_SOURCE_FFMPEG": "ffmpeg_path",
     },
 }
 

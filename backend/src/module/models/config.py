@@ -409,6 +409,48 @@ class Update(BaseModel):
     auto_check: bool = Field(default=True, description="Auto-check for updates")
 
 
+class OnlineSource(BaseModel):
+    """在线源（在线播放站）下载配置。
+
+    在线源给的是片源直链（mp4/mkv/m3u8）而非种子，qBittorrent 无法处理，
+    因此使用独立的 aria2 RPC 下载；m3u8（HLS）由 ffmpeg 下载封装为 mp4。
+    与主下载器（``downloader``）完全解耦：主下载器仍可用 qBittorrent 下载
+    种子 RSS，在线源走这套独立的 aria2 配置。
+    """
+
+    enable: bool = Field(default=False, description="Enable online source download")
+    aria2_rpc_url_: str = Field(
+        default="http://172.17.0.1:6800",
+        alias="aria2_rpc_url",
+        description="aria2 JSON-RPC URL for online-source HTTP downloads",
+    )
+    aria2_secret_: str = Field(
+        default="",
+        alias="aria2_secret",
+        description="aria2 RPC secret (token)",
+    )
+    save_path: str = Field(
+        default="/downloads/Bangumi",
+        description="Save path for online-source downloads",
+    )
+    ffmpeg_path: str = Field(
+        default="ffmpeg",
+        description="ffmpeg binary path used to download/remux m3u8 (HLS)",
+    )
+    request_delay: float = Field(
+        default=2.0,
+        description="Delay between requests to the same online-source host",
+    )
+
+    @property
+    def aria2_rpc_url(self):
+        return _expand(self.aria2_rpc_url_)
+
+    @property
+    def aria2_secret(self):
+        return _expand(self.aria2_secret_)
+
+
 class Config(BaseModel):
     """Root configuration model composed of all subsection models."""
 
@@ -425,6 +467,7 @@ class Config(BaseModel):
     experimental_openai: ExperimentalOpenAI = ExperimentalOpenAI()
     security: Security = Security()
     update: Update = Update()
+    online_source: OnlineSource = OnlineSource()
 
     def model_dump(self, *args, by_alias=True, **kwargs):
         return super().model_dump(*args, by_alias=by_alias, **kwargs)

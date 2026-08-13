@@ -53,6 +53,11 @@ export const mockBangumiAPI: BangumiAPI = {
   preferred_group: null,
   preferred_resolution: null,
   episode_type: 'episode',
+  online_source: null,
+  online_subject_id: null,
+  online_channel: null,
+  online_update_time: null,
+  online_update_weekday: null,
 };
 
 export const mockBangumiRule: BangumiRule = {

@@ -88,7 +88,9 @@ def _media_folder(data: Bangumi | BangumiUpdate | Movie | MovieUpdate) -> str:
     return "Unknown Bangumi"
 
 
-def gen_save_path(data: Bangumi | BangumiUpdate | Movie | MovieUpdate) -> str:
+def gen_save_path(
+    data: Bangumi | BangumiUpdate | Movie | MovieUpdate, root: str | None = None
+) -> str:
     """Generate save path for a bangumi.
 
     The save path uses the adjusted season number (season + season_offset)
@@ -97,12 +99,16 @@ def gen_save_path(data: Bangumi | BangumiUpdate | Movie | MovieUpdate) -> str:
     Movies use a flat "Title (Year)" layout with no season subfolder, and
     specials/OVA/OAD land in "Season 0" (Jellyfin/Plex convention) instead of
     being interleaved with regular episodes.
+
+    ``root`` overrides the download root (defaults to ``settings.downloader.path``);
+    在线源下载用它指向独立的在线源保存目录。
     """
+    base = root or settings.downloader.path
     folder = _media_folder(data)
     episode_type = getattr(data, "episode_type", "episode")
     if isinstance(data, (Movie, MovieUpdate)) or episode_type == "movie":
         # 电影/剧场版：Title (Year)/Title (Year).ext，不建 Season 子目录
-        return str(Path(settings.downloader.path) / folder)
+        return str(Path(base) / folder)
     # Apply season_offset to get the adjusted season number for the folder
     adjusted_season = data.season + getattr(data, "season_offset", 0)
     # 季号下限：普通剧集最小为 1——偏移到 Season 0 会被 Plex/Jellyfin 当作
@@ -113,7 +119,7 @@ def gen_save_path(data: Bangumi | BangumiUpdate | Movie | MovieUpdate) -> str:
         logger.warning(
             f"Season offset would result in invalid season for {data.official_title}, using original season"
         )
-    save_path = Path(settings.downloader.path) / folder / f"Season {adjusted_season}"
+    save_path = Path(base) / folder / f"Season {adjusted_season}"
     return str(save_path)
 
 

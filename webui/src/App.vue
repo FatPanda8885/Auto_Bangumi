@@ -7,6 +7,7 @@ import {
   NMessageProvider,
   darkTheme,
 } from 'naive-ui';
+import AbOnlineSourceModal from '@/components/online-source/ab-online-source-modal.vue';
 
 const { isDark } = useDarkMode();
 const { refresh, isLoggedIn } = useAuth();
@@ -148,6 +149,7 @@ const naiveTheme = computed(() => (isDark.value ? darkTheme : null));
         <NDialogProvider>
           <RouterView></RouterView>
           <ab-confirm-host />
+          <AbOnlineSourceModal />
         </NDialogProvider>
       </NMessageProvider>
     </NConfigProvider>

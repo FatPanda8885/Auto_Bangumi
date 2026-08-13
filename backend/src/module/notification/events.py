@@ -280,6 +280,36 @@ class RenameConflictEvent:
         )
 
 
+@dataclass(slots=True, frozen=True)
+class OnlineSourceResolveFailedEvent:
+    """在线源番剧检查时，某一集无法解析出片源直链（源失效/改版/防盗链）。"""
+
+    kind: ClassVar[str] = "online_source_failed"
+    severity: ClassVar[str] = "error"
+    once: ClassVar[bool] = False
+
+    official_title: str
+    source: str
+    error: str = ""
+
+    def dedup_key(self) -> Optional[str]:
+        return f"online_source_failed:{self.official_title}"
+
+    def payload(self) -> dict:
+        return {
+            "official_title": self.official_title,
+            "source": self.source,
+            "error": self.error,
+        }
+
+    def describe(self) -> tuple[str, str]:
+        return (
+            "在线源解析失败",
+            f"番剧：{self.official_title}\n在线源：{self.source}\n"
+            f"集数：{self.error}\n请检查该源是否失效或改版。",
+        )
+
+
 # 除「新集数」以外的通知事件的联合类型。
 SystemEvent = (
     RssFailureEvent
@@ -291,4 +321,5 @@ SystemEvent = (
     | LLMAuthFailureEvent
     | LLMPluginInstallFailedEvent
     | RenameConflictEvent
+    | OnlineSourceResolveFailedEvent
 )

@@ -30,6 +30,12 @@ export interface BangumiRule {
   preferred_group: string | null;
   preferred_resolution: string | null;
   episode_type: 'episode' | 'movie' | 'special';
+  // 在线源追番绑定（半自动：绑定源 + 人工设置更新时间）
+  online_source: string | null;
+  online_subject_id: string | null;
+  online_channel: string | null;
+  online_update_time: string | null; // "HH:MM"，空 = 不自动检查
+  online_update_weekday: number | null; // 0=Mon..6=Sun
 }
 
 export interface BangumiAPI extends Omit<BangumiRule, 'filter' | 'rss_link'> {
@@ -73,6 +79,11 @@ export const ruleTemplate: BangumiRule = {
   preferred_group: null,
   preferred_resolution: null,
   episode_type: 'episode',
+  online_source: null,
+  online_subject_id: null,
+  online_channel: null,
+  online_update_time: null,
+  online_update_weekday: null,
 };
 
 /** Legacy offset suggestion (for backward compatibility) */
